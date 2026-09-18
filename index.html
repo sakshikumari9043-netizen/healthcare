@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareConnect - Advanced Healthcare Portal</title>
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --primary-color: #0284c7;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --primary-color: #38bdf8;
+            --accent-red: #f87171;
+            --accent-green: #34d399;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-theme { background-color: var(--primary-color); color: white; }
+        .btn-emergency { background-color: var(--accent-red); color: white; }
+
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        input { flex: 2; min-width: 200px; }
+        select { flex: 1; min-width: 150px; }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-red { background-color: var(--accent-red); }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .btn-contact {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.2s;
+        }
+
+        .btn-contact:hover { opacity: 0.9; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px; right: 18px;
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            background: rgba(0,0,0,0.03);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .modal-form input, .modal-form select {
+            width: 93%;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>🏥 CareConnect - Healthcare Portal</h2>
+            <div class="header-btns">
+                <button class="btn btn-emergency" onclick="alert('🚨 Connecting to Emergency Hotline Services...')">🚑 Emergency Service</button>
+                <button class="btn btn-theme" onclick="toggleTheme()">🌙 Theme</button>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <input type="text" id="searchInput" onkeyup="filterHospitals()" placeholder="🔍 Search hospital, area, or specialist...">
+            <select id="bloodSelect" onchange="filterHospitals()">
+                <option value="all">🩸 All Blood Groups</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+            </select>
+        </div>
+
+        <div id="hospitalList">
+            <!-- Hospital 1 -->
+            <div class="card" data-info="city care hospital main road west champaran a+ o+ b+ cardiology" data-blood="A+ O+ B+">
+                <div class="card-header">
+                    <h3>City Care Multispecialty Hospital</h3>
+                    <span class="badge">Open Always</span>
+                </div>
+                <div class="info-grid">
+                    <p>📍 <strong>Location:</strong> Main Road, West Champaran</p>
+                    <p>🛏️ <strong>ICU Beds:</strong> Available</p>
+                    <p>🩸 <strong>Blood Bank:</strong> A+, O+, B+</p>
+                    <p>👨‍⚕️ <strong>Specialist:</strong> Cardiologist, Surgeon</p>
+                </div>
+                <button class="btn-contact" onclick="openDetails('City Care Hospital', 'Dr. Rajesh Kumar', '+91 XXXXXXXXXX', 'Full Day Service', 'West Champaran')">🔵 Contact Desk & Book Bed / OPD</button>
+            </div>
+
+            <!-- Hospital 2 -->
+            <div class="card" data-info="lifecare specialty hospital station road west champaran b+ ab+ a- pediatrics" data-blood="B+ AB+ A-">
+                <div class="card-header">
+                    <h3>LifeCare Specialty Hospital</h3>
+                    <span class="badge">Emergency Active</span>
+                </div>
+                <div class="info-grid">
+                    <p>📍 <strong>Location:</strong> Station Road, West Champaran</p>
+                    <p>🛏️ <strong>ICU Beds:</strong> Available</p>
+                    <p>🩸 <strong>Blood Bank:</strong> B+, AB+, A-</p>
+                    <p>👨‍⚕️ <strong>Specialist:</strong> Pediatrician, Orthopedic</p>
+                </div>
+                <button class="btn-contact" onclick="openDetails('LifeCare Specialty Hospital', 'Dr. Anita Sharma', '+91 XXXXXXXXXX', 'Day Time Service', 'Station Road')">🔵 Contact Desk & Book Bed / OPD</button>
+            </div>
+
+            <!-- Hospital 3 -->
+            <div class="card" data-info="apollo clinic market chowk o- b- ab- neurology" data-blood="O- B- AB-">
+                <div class="card-header">
+                    <h3>Apollo Emergency Clinic</h3>
+                    <span class="badge badge-red">Critical Care</span>
+                </div>
+                <div class="info-grid">
+                    <p>📍 <strong>Location:</strong> Market Chowk</p>
+                    <p>🛏️ <strong>ICU Beds:</strong> Available</p>
+                    <p>🩸 <strong>Blood Bank:</strong> O-, B-, AB-</p>
+                    <p>👨‍⚕️ <strong>Specialist:</strong> Neurologist, Trauma Expert</p>
+                </div>
+                <button class="btn-contact" onclick="openDetails('Apollo Emergency Clinic', 'Dr. Vikram Sahay', '+91 XXXXXXXXXX', 'Emergency Desk Only', 'Market Chowk')">🔵 Contact Desk & Book Bed / OPD</button>
+            </div>
+
+            <!-- Hospital 4 -->
+            <div class="card" data-info="janta blood bank & health hub college road a+ o+ b+ ab+" data-blood="A+ O+ B+ AB+">
+                <div class="card-header">
+                    <h3>Janta Health Center & Blood Hub</h3>
+                    <span class="badge">Blood Bank Special</span>
+                </div>
+                <div class="info-grid">
+                    <p>📍 <strong>Location:</strong> College Road</p>
+                    <p>🛏️ <strong>General Beds:</strong> Available</p>
+                    <p>🩸 <strong>Blood Bank:</strong> A+, O+, B+, AB+</p>
+                    <p>👨‍⚕️ <strong>Specialist:</strong> General Physician</p>
+                </div>
+                <button class="btn-contact" onclick="openDetails('Janta Health Center', 'Dr. S. K. Verma', '+91 XXXXXXXXXX', 'Regular Hours', 'College Road')">🔵 Contact Desk & Book Bed / OPD</button>
+            </div>
+
+            <!-- Hospital 5 -->
+            <div class="card" data-info="sunrise hospital bypass road a- o- b+" data-blood="A- O- B+">
+                <div class="card-header">
+                    <h3>Sunrise Trauma Center</h3>
+                    <span class="badge">Open Always</span>
+                </div>
+                <div class="info-grid">
+                    <p>📍 <strong>Location:</strong> Bypass Road</p>
+                    <p>🛏️ <strong>ICU Beds:</strong> Available</p>
+                    <p>🩸 <strong>Blood Bank:</strong> A-, O-, B+</p>
+                    <p>👨‍⚕️ <strong>Specialist:</strong> Emergency Surgeon</p>
+                </div>
+                <button class="btn-contact" onclick="openDetails('Sunrise Trauma Center', 'Dr. Pankaj Roy', '+91 XXXXXXXXXX', 'Full Day Service', 'Bypass Road')">🔵 Contact Desk & Book Bed / OPD</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pop-up -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-card">
+            <span class="close-btn" onclick="closeDetails()">&times;</span>
+            <h3 id="modalHospital">Hospital Name</h3>
+            <hr>
+            <div>
+                <p>👤 <strong>Desk In-Charge:</strong> <span id="modalName"></span></p>
+                <p>📞 <strong>Direct Helpline:</strong> <span id="modalPhone"></span></p>
+                <p>📍 <strong>Address:</strong> <span id="modalAddress"></span></p>
+                <p>⏰ <strong>Timings:</strong> <span id="modalTime"></span></p>
+            </div>
+
+            <div class="modal-form">
+                <strong>📝 Instant Bed / OPD Slot Booking:</strong>
+                <input type="text" id="patientName" placeholder="Patient Full Name">
+                <select id="bookingType">
+                    <option value="Emergency Bed">Emergency ICU Bed</option>
+                    <option value="General Bed">General Ward Bed</option>
+                    <option value="OPD Doctor Consultation">OPD Doctor Consultation</option>
+                </select>
+                <button class="btn-contact" style="background-color: var(--accent-green);" onclick="confirmBooking()">✅ Confirm Instant Booking</button>
+            </div>
+
+            <div class="action-btns">
+                <button class="btn-action" style="background-color: #25d366;" onclick="alert('Redirecting to Helpline Support Desk...')">💬 Chat Support</button>
+                <button class="btn-action" style="background-color: #0284c7;" onclick="alert('Opening Location Route Map...')">🗺️ Route Map</button>
+            </div>
+            
+            <button class="btn-action" style="width: 100%; margin-top: 10px; background-color: #64748b;" onclick="closeDetails()">Close Window</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            let body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        function filterHospitals() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let blood = document.getElementById('bloodSelect').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+
+            for (let i = 0; i < cards.length; i++) {
+                let info = cards[i].getAttribute('data-info').toLowerCase();
+                let matchesSearch = info.includes(input);
+                let matchesBlood = (blood === 'all') || info.includes(blood);
+
+                if (matchesSearch && matchesBlood) {
+                    cards[i].style.display = "block";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        function openDetails(hospital, name, phone, timing, address) {
+            document.getElementById('modalHospital').innerText = hospital;
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalPhone').innerText = phone;
+            document.getElementById('modalAddress').innerText = address;
+            document.getElementById('modalTime').innerText = timing;
+            document.getElementById('patientName').value = '';
+            document.getElementById('contactModal').style.display = 'flex';
+        }
+
+        function closeDetails() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+
+        function confirmBooking() {
+            let name = document.getElementById('patientName').value;
+            let type = document.getElementById('bookingType').value;
+            let hospital = document.getElementById('modalHospital').innerText;
+
+            if (name.trim() === '') {
+                alert('Please enter Patient Name before confirming!');
+            } else {
+                alert('🎉 BOOKING CONFIRMED!\n\nPatient Name: ' + name + '\nBooking Type: ' + type + '\nHospital: ' + hospital + '\n\nEmergency Pass generated successfully!');
+                closeDetails();
+            }
+        }
+    </script>
+</body>
+</html>
